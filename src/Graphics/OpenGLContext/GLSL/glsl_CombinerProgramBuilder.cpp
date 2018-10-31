@@ -1030,11 +1030,6 @@ public:
 						"    c2.rgb *= c2.a;																	\\\n"
 						"    name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 						\\\n"
 						"    name.rgb /= name.a;																\\\n" // Divide alpha to get actual color value
-						"																						\\\n"
-						"    if(name.a != 0.0 && name.a != 1.0){												\\\n" // Smooth alpha only if name.a is between 0.0 and 1.0
-						"      name.a = clamp((name.a - 0.5) / (1.0 - 0.5), 0.0, 1.0 );							\\\n" // improves kirby64 and zelda mm text
-						"      name.a = name.a * name.a * ( 3.0 - 2.0 * name.a );								\\\n"
-						"    }																					\\\n"
 						"  }																					\\\n"
 						"  else name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 						\\\n"
 						"}																						\n"
@@ -1066,11 +1061,6 @@ public:
 						"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n" // Interpolates bottom row in X direction.
 						"    name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n" // Interpolate in Y direction.
 						"    name.rgb /= name.a;																						\\\n" // Divide alpha to get actual color value
-						"																												\\\n"
-						"    if(name.a != 0.0 && name.a != 1.0){																		\\\n" // Smooth alpha only if name.a is between 0.0 and 1.0
-						"      name.a = clamp((name.a - 0.5) / (1.0 - 0.5), 0.0, 1.0 );													\\\n" // improves kirby64 and zelda mm text
-						"      name.a = name.a * name.a * ( 3.0 - 2.0 * name.a );														\\\n"
-						"    }																											\\\n"
 						"  }																											\\\n"
 						"  else{																										\\\n"
 						"    mediump vec2 interpolationFactor = abs(offset);															\\\n"
