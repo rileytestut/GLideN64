@@ -36,7 +36,7 @@ EXPORT int CALL osal_is_directory(const wchar_t * _name)
 	return 0;
 }
 
-EXPORT int CALL osal_mkdirp(const wchar_t *_dirpath)
+__attribute__((visibility("hidden"))) int CALL osal_mkdirp(const wchar_t *_dirpath)
 {
 	NSString* nsPath = [[NSString alloc] initWithBytes:_dirpath length:wcslen(_dirpath)*sizeof(*_dirpath) encoding:NSUTF32LittleEndianStringEncoding];
 	if (![[NSFileManager defaultManager] createDirectoryAtPath:nsPath withIntermediateDirectories:YES attributes:nil error:nil])

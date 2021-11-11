@@ -59,7 +59,7 @@ EXPORT int CALL osal_path_existsW(const wchar_t *path);
 // Returns 0 if all directories on the path exist or successfully created
 // Returns 1 if path is bad
 // Returns 2 if we can't create some directory on the path
-EXPORT int CALL osal_mkdirp(const wchar_t *dirpath);
+__attribute__((visibility("hidden"))) int CALL osal_mkdirp(const wchar_t *dirpath);
 
 EXPORT void * CALL osal_search_dir_open(const wchar_t *_pathname);
 EXPORT const wchar_t * CALL osal_search_dir_read_next(void * dir_handle);
