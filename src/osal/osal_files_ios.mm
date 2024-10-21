@@ -1,6 +1,7 @@
 #include "osal_files.h"
 #import <Foundation/Foundation.h>
 #include <string>
+#include <dirent.h>
 
 /* global functions */
 
@@ -55,37 +56,29 @@ struct IOSDirSearch
 
 EXPORT void * CALL osal_search_dir_open(const wchar_t *_pathname)
 {
-	NSString *nsPath = [[NSString alloc] initWithBytes:_pathname length:wcslen(_pathname)*sizeof(*_pathname) encoding:NSUTF32LittleEndianStringEncoding];
-	IOSDirSearch *dirSearch = new IOSDirSearch;
-	dirSearch->dirNSString = CFBridgingRetain(nsPath);
-	dirSearch->enumerator = CFBridgingRetain([[NSFileManager defaultManager] enumeratorAtPath:nsPath]);
-	return dirSearch;
+    char pathname[PATH_MAX];
+    wcstombs(pathname, _pathname, PATH_MAX);
+    DIR *dir;
+    dir = opendir(pathname);
+    return dir;
 }
 
 EXPORT const wchar_t * CALL osal_search_dir_read_next(void * dir_handle)
 {
-	IOSDirSearch *dirSearch = (IOSDirSearch*)dir_handle;
-	NSString *dirPath = (__bridge NSString *)dirSearch->dirNSString;
-	NSDirectoryEnumerator *dirEnum = (__bridge NSDirectoryEnumerator *)dirSearch->enumerator;
+    static wchar_t last_filename[PATH_MAX];
+    DIR *dir = (DIR *) dir_handle;
+    struct dirent *entry;
 
-	NSString *file = [dirEnum nextObject];
-	NSString *filePath = [dirPath stringByAppendingPathComponent:file];
-	BOOL isDirectory;
-	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory] && isDirectory)
-	{
-		[dirEnum skipDescendants];
-	}
-	NSData* data = [filePath dataUsingEncoding:NSUTF32LittleEndianStringEncoding];
-	dirSearch->currentFilePath = (const wchar_t *)[data bytes];
-	return dirSearch->currentFilePath.c_str();
+    entry = readdir(dir);
+    if (entry == NULL)
+        return NULL;
+    mbstowcs(last_filename, entry->d_name, PATH_MAX);
+    return last_filename;
 }
 
 EXPORT void CALL osal_search_dir_close(void * dir_handle)
 {
-	IOSDirSearch *dirSearch = (IOSDirSearch*)dir_handle;
-	CFRelease(dirSearch->dirNSString);
-	CFRelease(dirSearch->enumerator);
-	delete dirSearch;
+    closedir((DIR *) dir_handle);
 }
 
 #ifdef __cplusplus
